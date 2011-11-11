@@ -1,0 +1,7 @@
+#!/bin/sh
+# Managed by daemontools
+#   1) sudo cp -r tweetindexer /etc/service/
+exec 2>&1
+echo starting tweet indexer
+cd /var/virtualhost/sites/twitinfo/prod/server
+exec setuidgid www-data python index_tweets.py

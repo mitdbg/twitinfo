@@ -1,0 +1,16 @@
+{% extends "twitinfo/base.html" %}
+{% block content %}
+
+{% if error %}<p><strong>{{ error }}
+<!--<a href="/create_event">click here</a>--></strong></p>
+  {% else %}
+<!--	<p>If you can't find the link you are looking for, <a href="/create_event">click here</a> to create a new event</p>-->
+	<h4>The suggested links are:</h4>
+		{% for event in events %}
+			<ul>
+				<li><a href="/detail/{{event.id}}">{{event.name}}</a></li>
+			</ul>
+		{% endfor %}
+{% endif %}
+<p>To request a new topic be added to TwitInfo, <a href="mailto:twitinfo@csail.mit.edu">email us</a>!</p>
+{% endblock %}

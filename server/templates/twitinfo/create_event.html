@@ -1,0 +1,60 @@
+{% extends "twitinfo/base.html" %}
+
+{% block headblock %}
+
+	<link type="text/css" href="/static/css/ui-lightness/jquery-ui-1.8.custom.css" rel="Stylesheet" />	
+	<link type="text/css" href="/static/css/ui.timepickr.css" rel="Stylesheet" />	
+	<script type="text/javascript" src="/static/js/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery-ui-1.8.custom.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery-ui-timepicker-addon-0.5.min.js"></script>
+	
+
+		<script type="text/javascript">
+		$(function() {			
+			$("#id_start_date").datetimepicker({ dateFormat: 'yy-mm-dd', timeFormat: 'hh:mm' });
+			$("#id_end_date").datetimepicker({ dateFormat: 'yy-mm-dd', timeFormat: 'hh:mm' });
+		});
+		</script>
+
+{% endblock %}
+
+{% block content %}
+<p><b>Create an event</b></p>
+<form action="/create_event/" method="post">
+{% csrf_token %}
+
+
+<p>
+<div class="fieldWrapper">
+    {{ form.title.label_tag }}: {{ form.title }}
+    {{ form.title.errors }}
+</div>
+</p>
+
+<p>
+<div class="fieldWrapper">
+    {{ form.key_words.label_tag }}: {{ form.key_words }}
+    {{ form.key_words.errors }}
+</div>
+</p>
+
+<p>
+<fieldset>
+<legend>Advanced Settings (Optional)</legend>
+{{ form.start_date.label_tag }}: {{ form.start_date }}
+{{ form.start_date.errors }}
+	    
+{{ form.end_date.label_tag }}: {{ form.end_date }}
+{{ form.end_date.errors }}
+</fieldset>
+</p>
+
+</fieldset>
+
+{{ form.parent_id }}
+
+<input type="submit" value="Submit" id="button" />
+</form>
+</body>
+</html>
+{% endblock content %}

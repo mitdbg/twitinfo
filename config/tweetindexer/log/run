@@ -1,0 +1,2 @@
+#!/bin/sh
+exec setuidgid www-data multilog /var/www-log/tweetindexer

@@ -1,0 +1,164 @@
+{% extends "twitinfo/base.html" %}
+
+	{% block headblock %}
+		<script type='text/javascript' src='http://www.google.com/jsapi'></script>
+		<!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>-->
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+		<script type="text/javascript" src="/static/js/date.js"></script>
+		<style type="text/css">
+			div#title #title {
+			    font-size:16pt;
+			}
+			div#title .subheading {
+				font-size:10pt;
+			}
+		</style>
+			
+		<script type='text/javascript'>
+        	google.load('visualization', '1', {'packages':['annotatedtimeline']});
+			google.load('visualization', '1', {'packages':["corechart"]});
+            var old_infowindow = null;
+			function initialize() {
+                request_map("");
+                request_graph();
+                request_pie("");
+			}
+            function request_map(extra_args) {
+				$.getJSON("/detail/create_map/{{event.id}}?jsoncallback=?&" + extra_args,
+				          function(data){
+						  	draw_map(data)
+					 	  } 
+				);
+            }
+            function request_graph() {
+				$.getJSON("/detail/create_graph/{{event.id}}?jsoncallback=?",
+				          function(data){
+						  	draw_graph(data)
+					 	  } 
+				);
+            }
+            function request_pie(extra_args) {
+				$.getJSON("/detail/create_piChart/{{event.id}}?jsoncallback=?&" + extra_args,
+				          function(data){
+						  	draw_piChart(data)
+					 	  } 
+				);
+            }
+			function draw_graph(data) {
+			  var data = new google.visualization.DataTable(data,0.6);
+			  var chart = new google.visualization.AnnotatedTimeLine(document.getElementById('chart_div'));
+			  chart.draw(data, {displayAnnotations: true,allowHtml:true, annotationsWidth: 30, displayAnnotationsFilter: true});
+              
+              google.visualization.events.addListener(chart, 'select',
+                function(event) {
+                    row = chart.getSelection()[0].row;
+                    create_link = data.getValue(row, 3);
+                    arg_str = create_link.split("?")[1];
+                    args = arg_str.split("&");
+                    extra_args = args[0] + "&" + args[1];
+//                    extra_args = extra_args + "end_date=" + formatDate(data.getValue(row,0), 'yyyy-MM-dd HH:mm');
+                    request_pie(extra_args);
+                    request_map(extra_args);
+                    tweet_src = "/display_links/{{event.id}}?"
+                    tweet_src = tweet_src + extra_args;
+                    $("#links_iframe").attr("src", tweet_src);
+                    tweet_src = "/display_tweets/{{event.id}}?"
+                    tweet_src = tweet_src + extra_args;
+                    words = data.getValue(row, 2);
+                    words = words.replace(/ /g, "");
+                    tweet_src = tweet_src + "&words=" + words;
+                    $("#tweets_iframe").attr("src", tweet_src);
+                });
+            }	
+			function draw_piChart(data) {
+				var data = new google.visualization.DataTable(data,0.6);
+				var chart = new google.visualization.PieChart(document.getElementById('pchart_div'));
+				chart.draw(data, {displayAnnotations: true});
+			}
+            function draw_map(data) {
+                var myLatlng = new google.maps.LatLng(39.095963,-97.031250);
+                var myOptions = {
+                  zoom: 1,
+                  center: myLatlng,
+                  mapTypeId: google.maps.MapTypeId.ROADMAP
+                }
+                var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+                for (var i = 0; i < data.length; i++) {
+                    var tweet = data[i];
+                    var icon = 'http://labs.google.com/ridefinder/images/mm_20_gray.png';
+                    if (tweet.sentiment > 0) {
+                        icon = 'http://labs.google.com/ridefinder/images/mm_20_blue.png';
+                    } else if (tweet.sentiment < 0) {
+                        icon = 'http://labs.google.com/ridefinder/images/mm_20_red.png';
+                    }
+                    var marker = new google.maps.Marker({
+                        position: new google.maps.LatLng(tweet.latitude, tweet.longitude), 
+                        map: map,
+                        title: tweet.text,
+                        icon: icon
+                    });
+                    attach_message(map, marker, tweet);
+                }
+            }
+            
+            function attach_message(map, marker, tweet) {
+                content = "<div style='float: left;'><img src='" + tweet.image + "'></div>" + tweet.text;
+                var infowindow = new google.maps.InfoWindow(
+                    { content: content }
+                );
+                google.maps.event.addListener(marker, 'click', function() {
+                    if (old_infowindow != null) {
+                        old_infowindow.close();
+                    }
+                    infowindow.open(map,marker);
+                    old_infowindow = infowindow;
+                });
+            }
+		</script>
+		{% endblock %}
+{% block content %}
+{% if error %}
+    
+	<p><strong>{{ error }}</strong></p>
+
+{% else %}
+	
+		<div style="float: right; width: 30%;">
+			<b>Relevant Tweets</b>
+			<iframe src ="/display_tweets/{{event.id}}" id="tweets_iframe" width="100%" height="250">
+		  		<p>Your browser does not support iframes.</p>
+			</iframe>
+			<div style="margin: 5px;">
+			<b>Popular Links</b>
+			</div>
+            <iframe src ="/display_links/{{event.id}}" id="links_iframe" width="100%" height="80">
+		  		<p>Your browser does not support iframes.</p>
+			</iframe>
+			<div style="margin: 5px;">
+            <b>Overall Sentiment</b>
+            </div>
+			 <div id='pchart_div' style='width: 100%; height: 175px;'></div>
+		</div> 
+
+		<div id="title">
+			<p>
+			<span id="title">{{event.name}}</span><br>
+			<span class="subheading">Keywords: {{keywords}}</span><br>
+			<span class="subheading">Event dates: 
+            {{ event.start_date|default_if_none:"no start"}} - 
+            {{event.end_date|default_if_none:"no end" }}</span>
+			</p>
+		</div>
+
+		<div style="float: left; width: 70%;">
+			 <div><b>Message Frequency</b></div>
+			 <div id='chart_div' style='width: 100%; height: 240px;'></div>
+			 <div><b>Tweet Map</b></div>
+             <div id="map_canvas" style='width: 100%; height: 240px';></div> 
+		</div>
+
+		
+		<div style="clear: both;"></div>
+{% endif %}
+{% endblock content %}

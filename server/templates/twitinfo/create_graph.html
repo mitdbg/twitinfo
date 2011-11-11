@@ -1,0 +1,19 @@
+({% templatetag openbrace %}
+	"cols": [{% templatetag openbrace %}'id': 'date','label':'DATE','type': 'datetime'{% templatetag closebrace %},{% templatetag openbrace %}'id': 'frequency','label':'FREQUENCY' ,'type': 'number'{% templatetag closebrace %},{% templatetag openbrace %}'id': 'title','label':'TITLE','type': 'string'{% templatetag closebrace %},{% templatetag openbrace %}'id': 'text','label':'TEXT','type': 'string'{% templatetag closebrace %}],
+	"rows": [
+		{% for tweet in tweets %}
+			{% templatetag openbrace %}'c':[ {% templatetag openbrace %}'v':{{tweet.d}}{% templatetag closebrace %},{% templatetag openbrace %}'v':{{tweet.num_tweets}}{% templatetag closebrace %},{% templatetag openbrace %}'v':{{tweet.title|safe}}{% templatetag closebrace %},
+		
+			{% templatetag openbrace %}
+			
+			'v':
+			{% if tweet.title != "null" %}
+			'<!--<br><a href="/create_event?start_date={{tweet.data.start_date}}&end_date={{tweet.data.end_date}}&keywords={{tweet.data.keywords}}&parent_id={{tweet.data.event}}" target="_blank">Label this event</a><ul>{% for child in tweet.children %}<li><a href="/detail/{{child.id}}/" target="_blank">{{child.name}}</a></li>{% endfor %}</ul>-->'
+			{% else %}null{% endif %}
+			{% templatetag closebrace %}]
+			
+			{% templatetag closebrace %},
+		{% endfor %}
+	]
+{% templatetag closebrace %});
+

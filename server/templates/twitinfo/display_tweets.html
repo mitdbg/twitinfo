@@ -1,0 +1,17 @@
+{% for tweet in tweets %}
+<div style="border-color: gray; border-style: solid; border-width: 0px 0px 1px 0px; padding: 2px 0px 2px 0px; background-color: 
+{% if tweet.sentiment > 0 %}
+rgba(69,175,226,.25);
+{% else %} {% if tweet.sentiment < 0 %}
+rgba(220,57,18,.25);
+{% else %}
+rgb(255,255,255);
+{% endif %}{% endif %}
+">
+<div style="float: left;">
+<img border="0" src={{tweet.profile_image_url}} width="40" height="40"/>
+</div>
+{{tweet.tweet}}
+<div style="clear: both;"></div>
+</div>
+{% endfor %}

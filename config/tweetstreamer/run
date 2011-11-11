@@ -1,0 +1,7 @@
+#!/bin/sh
+# Managed by daemontools
+#   1) sudo cp -r tweetstreamer /etc/service/
+exec 2>&1
+echo starting tweet streamer
+cd /var/virtualhost/sites/twitinfo/prod/server
+exec setuidgid www-data python stream_tweets.py

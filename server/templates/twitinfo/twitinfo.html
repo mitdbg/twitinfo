@@ -1,0 +1,68 @@
+<html>
+<head>
+
+<style type="text/css">
+
+input#button{
+ background-color :#D3D3D3;
+ border : 1px solid #000;
+ font-family: verdana;
+ font-size: 15px;
+ }
+
+div#bottom {
+    margin-top: 95px;
+    border-bottom: 1px solid grey;
+}
+div#hd #heading {
+	
+
+	color:0099FF;
+    margin-top: 20;
+    padding-top: 40;
+	font-size:60pt;
+    
+}
+
+.textInput
+{
+width: 500px;
+height: 28px;
+}
+
+span.ex {color:00FF33;}
+</style>
+</head>
+
+<body>
+
+<div id="hd" align=center>
+
+    <div id="heading">twitInfo</div>
+    <p>Find out what Twitter thinks about anything.</p>
+    Featured topics:<br />
+    {% for event in featured %}
+        <a href="/detail/{{event.id}}">{{event.name}}</a><br />
+    {% endfor %}
+<!--    <form action="/results" method="get">
+        <p>
+		  <input name="query" type="textbox" class="textInput">
+		</p>
+		<p>
+		  <input id="button" type="submit" value="Search" >
+        </p>
+    </form>-->
+</div>
+<br><br><br>
+<p>
+twitInfo is a tool which tracks keyword mentions on Twitter and turns them
+into timeline visualizations which summarize various topics.  To learn
+more, read our <a
+href="http://people.csail.mit.edu/marcua/papers/twitinfo-chi2011.pdf">CHI
+2011 paper</a> or send us <a href="mailto:twitinfo@csail.mit.edu">an email</a>.
+</p>
+
+
+
+</body>
+</html>
