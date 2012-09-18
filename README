@@ -1,0 +1,15 @@
+We're working on documentation to get you started a bit easier.
+
+In short, the code at https://github.com/mitdbg/twitinfo/tree/master/server
+is a django app.  You can read about django apps at
+https://docs.djangoproject.com/en/dev/intro/tutorial01/
+
+Two scripts help you actually get the data:
+https://github.com/mitdbg/twitinfo/blob/master/server/index_tweets.py
+[indexes tweets as they come in] 
+https://github.com/mitdbg/twitinfo/blob/master/server/stream_tweets.py
+[brings in tweets with the keywords you want to track]
+
+As a sanity check for your setup working, after running "python manage.py
+runserver 0.0.0.0:8000" you should be able to access
+http://server_ip_address:8000/create_event to create an event to track.
